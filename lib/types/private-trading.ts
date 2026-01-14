@@ -291,3 +291,55 @@ export interface PrivateTradeSession {
    */
   endedAt?: number;
 }
+
+/**
+ * Private trade mode for UI components
+ */
+export enum PrivateTradeMode {
+  SHIELD = 'shield',
+  PREPARE = 'prepare',
+  UNSHIELD = 'unshield',
+  TRADE = 'trade',
+  EXIT = 'exit'
+}
+
+/**
+ * Props for private trade dialog component
+ * For use in UI implementations that consume this library
+ */
+export interface PrivateTradeDialogProps {
+  /**
+   * Whether the dialog is open
+   */
+  isOpen: boolean;
+
+  /**
+   * Current trade mode/step
+   */
+  mode: PrivateTradeMode;
+
+  /**
+   * Current trade session (if active)
+   */
+  session?: PrivateTradeSession;
+
+  /**
+   * Callback when dialog is closed
+   */
+  onClose: () => void;
+
+  /**
+   * Callback when trade is initiated
+   */
+  onTradeInitiated?: (config: PrivateTradeConfig) => void;
+
+  /**
+   * Callback when trade is completed
+   */
+  onTradeCompleted?: (session: PrivateTradeSession) => void;
+
+  /**
+   * Callback when an error occurs
+   */
+  onError?: (error: string) => void;
+}

@@ -7,12 +7,14 @@ import {
   TransactionState,
   PrivacyPoolStatus,
   TradeType,
+  PrivateTradeMode,
   PrivateTradeConfig,
   PrivateFundsStatus,
   IncognitoWallet,
   ShieldTransaction,
   UnshieldTransaction,
-  PrivateTradeSession
+  PrivateTradeSession,
+  PrivateTradeDialogProps
 } from '../private-trading';
 
 describe('Private Trading Types', () => {
@@ -474,6 +476,104 @@ describe('Private Trading Types', () => {
       };
 
       expect(typeof status.isReady).toBe('boolean');
+    });
+  });
+
+  describe('PrivateTradeMode enum', () => {
+    it('should have all expected modes', () => {
+      expect(PrivateTradeMode.SHIELD).toBe('shield');
+      expect(PrivateTradeMode.PREPARE).toBe('prepare');
+      expect(PrivateTradeMode.UNSHIELD).toBe('unshield');
+      expect(PrivateTradeMode.TRADE).toBe('trade');
+      expect(PrivateTradeMode.EXIT).toBe('exit');
+    });
+  });
+
+  describe('PrivateTradeDialogProps interface', () => {
+    it('should accept valid props with required fields', () => {
+      const mockClose = jest.fn();
+      const props: PrivateTradeDialogProps = {
+        isOpen: true,
+        mode: PrivateTradeMode.SHIELD,
+        onClose: mockClose
+      };
+
+      expect(props.isOpen).toBe(true);
+      expect(props.mode).toBe(PrivateTradeMode.SHIELD);
+      expect(typeof props.onClose).toBe('function');
+    });
+
+    it('should accept optional session field', () => {
+      const mockClose = jest.fn();
+      const mockSession: PrivateTradeSession = {
+        sessionId: 'session-123',
+        mainWalletAddress: '0x0987654321098765432109876543210987654321',
+        incognitoWallet: {
+          address: '0x1234567890123456789012345678901234567890',
+          mainWalletAddress: '0x0987654321098765432109876543210987654321',
+          chainId: 1,
+          isActive: true,
+          createdAt: Date.now()
+        },
+        config: {
+          tradeType: TradeType.ENTRY,
+          token: 'USDC',
+          amount: '1000',
+          slippageTolerance: 0.5
+        },
+        status: {
+          shieldedBalance: '1000',
+          incognitoBalance: '500',
+          mainWalletBalance: '2000',
+          privacyPoolStatus: PrivacyPoolStatus.READY,
+          isReady: true,
+          transactionState: TransactionState.COMPLETED,
+          lastUpdated: Date.now()
+        },
+        startedAt: Date.now()
+      };
+
+      const props: PrivateTradeDialogProps = {
+        isOpen: true,
+        mode: PrivateTradeMode.TRADE,
+        session: mockSession,
+        onClose: mockClose
+      };
+
+      expect(props.session).toEqual(mockSession);
+    });
+
+    it('should accept optional callback fields', () => {
+      const mockClose = jest.fn();
+      const mockTradeInitiated = jest.fn();
+      const mockTradeCompleted = jest.fn();
+      const mockError = jest.fn();
+
+      const props: PrivateTradeDialogProps = {
+        isOpen: true,
+        mode: PrivateTradeMode.PREPARE,
+        onClose: mockClose,
+        onTradeInitiated: mockTradeInitiated,
+        onTradeCompleted: mockTradeCompleted,
+        onError: mockError
+      };
+
+      expect(typeof props.onTradeInitiated).toBe('function');
+      expect(typeof props.onTradeCompleted).toBe('function');
+      expect(typeof props.onError).toBe('function');
+    });
+
+    it('should validate required properties exist', () => {
+      const mockClose = jest.fn();
+      const props: PrivateTradeDialogProps = {
+        isOpen: false,
+        mode: PrivateTradeMode.EXIT,
+        onClose: mockClose
+      };
+
+      expect(props).toHaveProperty('isOpen');
+      expect(props).toHaveProperty('mode');
+      expect(props).toHaveProperty('onClose');
     });
   });
 });
