@@ -24,3 +24,11 @@ export {
   PrivateTradeSession,
   PrivateTradeDialogProps,
 } from './types/private-trading';
+
+// Export services
+export { PrivateTradingService } from './privateTradingService';
+
+// Export SDK modules
+export * as ShieldModule from './sdk/privacy/shield';
+export * as UnshieldModule from './sdk/privacy/unshield';
+export * as IncognitoModule from './sdk/privacy/incognito';
